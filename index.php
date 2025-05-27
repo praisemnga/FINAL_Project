@@ -1,3 +1,11 @@
+<?php
+session_start();
+if (!isset($_SESSION['username'])) {
+    header('Location: login.php');
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -10,6 +18,7 @@
   <header>
     <h1>Sistem Manajemen Tugas Kelompok</h1>
     <p>Kelola tugas dengan efisien — untuk anggota dan ketua tim</p>
+    <a href="logout.php" style="float:right;color:#fff;text-decoration:none;margin-top:-2rem;">Logout</a>
   </header>
 
   <div class="container">
