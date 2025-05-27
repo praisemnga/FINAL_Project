@@ -20,10 +20,12 @@ function updateDashboard() {
   progressFill.textContent = persen + "%";
 }
 
-document.querySelector("form").addEventListener("submit", function(e) {
-  e.preventDefault();
-  const taskName = document.getElementById("task").value.trim();
-  const deadline = document.getElementById("deadline").value;
+document.querySelector("form")?.addEventListener("submit", function(e) {
+  if (userRole !== "ketua") {
+    alert("Hanya ketua yang dapat menambah tugas!");
+    e.preventDefault();
+    return;
+  }
 
   if (!taskName || !deadline) {
     alert("Isi semua kolom!");
@@ -56,3 +58,6 @@ document.querySelector(".task-list").addEventListener("change", function(e) {
 });
 
 window.addEventListener("DOMContentLoaded", updateDashboard);
+
+// Ambil role dari PHP (inject ke JS)
+const userRole = document.body.getAttribute('data-role') || 'anggota';

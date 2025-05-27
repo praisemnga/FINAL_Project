@@ -4,6 +4,7 @@ if (!isset($_SESSION['username'])) {
     header('Location: login.php');
     exit;
 }
+$role = $_SESSION['role'];
 ?>
 
 <!DOCTYPE html>
@@ -14,7 +15,7 @@ if (!isset($_SESSION['username'])) {
   <title>Sistem Manajemen Tugas Kelompok</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
+<body data-role="<?= htmlspecialchars($role) ?>">
   <header>
     <h1>Sistem Manajemen Tugas Kelompok</h1>
     <p>Kelola tugas dengan efisien — untuk anggota dan ketua tim</p>
@@ -42,6 +43,7 @@ if (!isset($_SESSION['username'])) {
       </ul>
     </div>
 
+    <?php if ($role === 'ketua'): ?>
     <div class="section">
       <h2>⚙️ Panel Admin (Ketua)</h2>
       <form>
@@ -63,6 +65,7 @@ if (!isset($_SESSION['username'])) {
         </div>
       </div>
     </div>
+    <?php endif; ?>
 
     <div class="section dashboard-section">
       <h2>📈 Dashboard Tugas</h2>
