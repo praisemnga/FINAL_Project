@@ -44,11 +44,29 @@ if ($role === 'ketua' && isset($_POST['tambah_tugas'])) {
     }
 }
 
+if (isset($_POST['selesai_tugas'])) {
+    $selesaiTask = $_POST['selesai_tugas'];
+    $stmt = $mysqli->prepare("UPDATE tasks SET is_done=1 WHERE name=?");
+    $stmt->bind_param("s", $selesaiTask);
+    $stmt->execute();
+    $stmt->close();
+    header("Location: index.php");
+    exit;
+}
+
 $tasks = [];
-$res = $mysqli->query("SELECT name, deadline FROM tasks");
+$res = $mysqli->query("SELECT name, deadline, is_done FROM tasks");
 if ($res) {
     while ($row = $res->fetch_assoc()) {
         $tasks[] = $row;
+    }
+}
+
+$attachments = [];
+$res = $mysqli->query("SELECT * FROM attachments");
+if ($res) {
+    while ($row = $res->fetch_assoc()) {
+        $attachments[$row['task_name']][] = $row;
     }
 }
 ?>
@@ -81,14 +99,23 @@ if ($res) {
       <ul class="task-list">
         <?php foreach ($tasks as $task): 
           $taskName = $task['name'];
+          $isDone = isset($task['is_done']) ? $task['is_done'] : 0;
         ?>
           <li>
             <div class="task-row">
               <div class="task-info">
-                <input type="checkbox" />
-                <span class="task-title"><?= htmlspecialchars($taskName) ?></span>
+                <input type="checkbox" disabled <?= $isDone ? 'checked' : '' ?> />
+                <span class="task-title<?= $isDone ? ' selesai' : '' ?>">
+                  <?= htmlspecialchars($taskName) ?><?= $isDone ? ' (Selesai)' : '' ?>
+                </span>
               </div>
               <span class="deadline"><?= htmlspecialchars($task['deadline']) ? "Deadline: " . htmlspecialchars($task['deadline']) : "" ?></span>
+              <?php if (!$isDone): ?>
+              <form method="post" style="display:inline;">
+                <input type="hidden" name="selesai_tugas" value="<?= htmlspecialchars($taskName) ?>">
+                <button type="submit" class="btn" style="background:#43a047;">Selesai</button>
+              </form>
+              <?php endif; ?>
             </div>
             <?php if (!empty($attachments[$taskName])): ?>
               <div class="attachments">
@@ -110,8 +137,7 @@ if ($res) {
             </form>
           </li>
         <?php endforeach; ?>
-      </ul>
-
+      </ul>     
 
     <?php if ($role === 'ketua'): ?>
     <div class="section">
@@ -128,7 +154,7 @@ if ($res) {
         <button type="submit" name="tambah_tugas" class="btn">Tambah Tugas</button>
       </form>
 
-      <form method="post" style="margin-top:1.5rem;">
+      <form method="post">
         <div class="form-group">
           <label for="broadcast">Broadcast Pesan ke Semua Anggota</label>
           <textarea name="broadcast" id="broadcast" rows="2" placeholder="Tulis pesan..." required></textarea>
@@ -161,7 +187,10 @@ if ($res) {
               </div>
             </div>
           </div>
-
+      <script>
+        const totalTugas = <?= count($tasks) ?>;
+        const tugasSelesai = <?= count(array_filter($tasks, fn($t) => !empty($t['is_done']))); ?>;
+      </script>
   <script src="script.js"></script>
 </body>
 </html>

@@ -208,3 +208,8 @@ ul.task-list li {
 .upload-form input[type="file"] {
   flex: 1;
 }
+
+.task-title.selesai {
+  text-decoration: line-through;
+  color: #888;
+}
