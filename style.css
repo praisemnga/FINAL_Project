@@ -218,20 +218,35 @@ ul.task-list li {
 /* Responsive mobile styles */
 @media (max-width: 700px) {
   .container {
-    padding: 0.5rem;
-    margin: 0.5rem;
+    padding: 0.5rem 0.2rem;
+    margin: 0.5rem 0;
     max-width: 100vw;
+    border-radius: 0;
+    box-shadow: none;
   }
   header {
-    padding: 1rem 0.5rem;
+    padding: 1rem 0.3rem;
     font-size: 1rem;
+    text-align: left;
+    position: relative;
   }
   h1 {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+  }
+  header p {
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+  }
+  header a {
+    float: none !important;
+    display: inline-block;
+    margin: 0.3rem 0.5rem 0 0;
+    font-size: 0.98em;
   }
   .section {
-    margin-bottom: 1rem;
-    padding: 0.5rem 0;
+    margin-bottom: 0.7rem;
+    padding: 0.3rem 0;
   }
   .dashboard-cards {
     flex-direction: column;
@@ -241,18 +256,24 @@ ul.task-list li {
     flex: 1 1 100%;
     padding: 0.7rem;
     font-size: 1rem;
+    min-width: 0;
   }
   ul.task-list li {
-    padding: 10px 8px 8px 8px;
-    font-size: 0.98em;
+    padding: 10px 6px 8px 6px;
+    font-size: 0.97em;
+    margin-bottom: 0.7rem;
   }
   .task-row {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.5rem;
+    gap: 0.4rem;
   }
   .attachments {
-    font-size: 0.97em;
+    font-size: 0.96em;
+    word-break: break-all;
+  }
+  .attachment-list {
+    padding-left: 14px;
   }
   .upload-form {
     flex-direction: column;
@@ -260,15 +281,17 @@ ul.task-list li {
     align-items: stretch;
   }
   .broadcast-box {
-    padding: 0.7rem 0.7rem;
-    font-size: 0.98em;
+    padding: 0.6rem 0.5rem;
+    font-size: 0.97em;
+    margin-bottom: 1rem;
+    word-break: break-word;
   }
   .progress-bar {
-    height: 16px;
+    height: 14px;
   }
   .progress-fill {
-    font-size: 0.95em;
-    padding-right: 4px;
+    font-size: 0.93em;
+    padding-right: 2px;
   }
   .form-group input, .form-group textarea {
     font-size: 1em;
@@ -277,9 +300,24 @@ ul.task-list li {
     width: 100%;
     padding: 0.5rem 0;
     font-size: 1em;
+    margin-top: 0.2rem;
   }
   .profile-box {
-    margin: 20px auto;
-    padding: 1rem;
+    margin: 16px auto;
+    padding: 0.7rem;
+    border-radius: 10px;
+  }
+  .profile-box h2 {
+    font-size: 1.2rem;
+  }
+  .role-badge {
+    font-size: 0.95rem;
+    padding: 0.2rem 0.7rem;
+  }
+  .avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 2rem;
+    margin-top: -40px;
   }
 }
