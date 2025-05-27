@@ -59,22 +59,50 @@ if ($row = $res->fetch_assoc()) {
   <div class="section">
       <h2>📋 Tugas Anggota</h2>
       <ul class="task-list">
+        <?php
+          $tasks = [
+            ['name' => 'Kerjakan laporan bab 1', 'deadline' => '30 Mei'],
+            ['name' => 'Diskusi materi presentasi', 'deadline' => '28 Mei']
+          ];
+          // Ambil lampiran dari database
+          $attachments = [];
+          $res = $mysqli->query("SELECT * FROM attachments");
+          while ($row = $res->fetch_assoc()) {
+            $attachments[$row['task_name']][] = $row;
+          }
+          foreach ($tasks as $task) :
+            $taskName = $task['name'];
+        ?>
         <li>
           <div class="task-info">
             <input type="checkbox" />
-            <span>Kerjakan laporan bab 1</span>
+            <span><?= htmlspecialchars($taskName) ?></span>
           </div>
-          <span class="deadline">Deadline: 30 Mei</span>
+          <span class="deadline">Deadline: <?= htmlspecialchars($task['deadline']) ?></span>
+          <!-- Daftar lampiran -->
+          <?php if (!empty($attachments[$taskName])): ?>
+            <div style="margin-top:8px;">
+              <strong>Lampiran:</strong>
+              <ul style="margin:0;padding-left:18px;">
+                <?php foreach ($attachments[$taskName] as $att): ?>
+                  <li>
+                    <a href="uploads/<?= htmlspecialchars($att['filename']) ?>" target="_blank"><?= htmlspecialchars($att['filename']) ?></a>
+                    <span style="color:#888;font-size:0.9em;">(<?= htmlspecialchars($att['uploaded_by']) ?>)</span>
+                  </li>
+                <?php endforeach; ?>
+              </ul>
+            </div>
+          <?php endif; ?>
+          
+          <!-- Form upload lampiran -->
+          <form action="Uploads/upload_file.php" method="post" enctype="multipart/form-data" style="margin-top:8px;">            <input type="hidden" name="task" value="<?= htmlspecialchars($taskName) ?>">
+            <input type="file" name="lampiran" required>
+            <button type="submit" class="btn" style="padding:2px 10px;font-size:0.95em;">Upload</button>
+          </form>
         </li>
-        <li>
-          <div class="task-info">
-            <input type="checkbox" checked />
-            <span>Diskusi materi presentasi</span>
-          </div>
-          <span class="deadline">Deadline: 28 Mei</span>
-        </li>
+        <?php endforeach; ?>
       </ul>
-    </div>
+
 
     <?php if ($role === 'ketua'): ?>
     <div class="section">
