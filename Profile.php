@@ -5,9 +5,23 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 $username = $_SESSION['username'];
-$role = $_SESSION['role'];
-$roleLabel = $role === 'ketua' ? 'Ketua Kelompok' : 'Anggota';
-$roleColor = $role === 'ketua' ? '#4f46e5' : '#388e3c';
+
+// Koneksi ke database
+$mysqli = new mysqli("localhost", "root", "", "tugas_project_akhir");
+if ($mysqli->connect_errno) {
+    die("Gagal koneksi MySQL: " . $mysqli->connect_error);
+}
+
+// Ambil data user dari database
+$stmt = $mysqli->prepare("SELECT username, role FROM users WHERE username = ?");
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$stmt->bind_result($db_user, $db_role);
+$stmt->fetch();
+$stmt->close();
+
+$roleLabel = $db_role === 'ketua' ? 'Ketua Kelompok' : 'Anggota';
+$roleColor = $db_role === 'ketua' ? '#4f46e5' : '#388e3c';
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -103,13 +117,13 @@ $roleColor = $role === 'ketua' ? '#4f46e5' : '#388e3c';
 <body>
     <div class="profile-box">
         <div class="avatar">
-            <?= strtoupper(substr($username, 0, 1)) ?>
+            <?= strtoupper(substr($db_user, 0, 1)) ?>
         </div>
-        <h2><?= htmlspecialchars($username) ?></h2>
+        <h2><?= htmlspecialchars($db_user) ?></h2>
         <div class="role-badge"><?= $roleLabel ?></div>
         <div class="profile-info">
-            <p><strong>Username:</strong> <?= htmlspecialchars($username) ?></p>
-            <p><strong>Role:</strong> <?= htmlspecialchars(ucfirst($role)) ?></p>
+            <p><strong>Username:</strong> <?= htmlspecialchars($db_user) ?></p>
+            <p><strong>Role:</strong> <?= htmlspecialchars(ucfirst($db_role)) ?></p>
         </div>
         <a href="index.php" class="btn">Kembali ke Dashboard</a>
     </div>

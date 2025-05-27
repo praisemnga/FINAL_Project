@@ -1,9 +1,10 @@
 <?php
 session_start();
 
-$usersFile = 'users.json';
-if (!file_exists($usersFile)) {
-    file_put_contents($usersFile, json_encode([]));
+// Koneksi ke database
+$mysqli = new mysqli("localhost", "root", "", "tugas_project_akhir");
+if ($mysqli->connect_errno) {
+    die("Gagal koneksi MySQL: " . $mysqli->connect_error);
 }
 
 $error = '';
@@ -16,31 +17,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validasi password
     if (
         strlen($pass) < 8 ||
-        !preg_match('/[A-Z]/', $pass) ||         // huruf besar
-        !preg_match('/[a-z]/', $pass) ||         // huruf kecil
-        !preg_match('/[0-9]/', $pass) ||         // angka
-        !preg_match('/[\W_]/', $pass)            // karakter spesial
+        !preg_match('/[A-Z]/', $pass) ||
+        !preg_match('/[a-z]/', $pass) ||
+        !preg_match('/[0-9]/', $pass) ||
+        !preg_match('/[\W_]/', $pass)
     ) {
         $error = 'Password minimal 8 karakter, mengandung huruf besar, huruf kecil, angka, dan karakter spesial.';
     } else {
-        $users = json_decode(file_get_contents($usersFile), true);
-
         // Cek username sudah ada
-        foreach ($users as $user) {
-            if ($user['username'] === $uname) {
-                $error = 'Username sudah terdaftar!';
-                break;
+        $stmt = $mysqli->prepare("SELECT id FROM users WHERE username = ?");
+        $stmt->bind_param("s", $uname);
+        $stmt->execute();
+        $stmt->store_result();
+        if ($stmt->num_rows > 0) {
+            $error = 'Username sudah terdaftar!';
+        } else {
+            // Insert user baru
+            $hash = password_hash($pass, PASSWORD_DEFAULT);
+            $stmt = $mysqli->prepare("INSERT INTO users (username, password, role) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $uname, $hash, $role);
+            if ($stmt->execute()) {
+                $success = 'Registrasi berhasil! Silakan login.';
+            } else {
+                $error = 'Gagal registrasi. Coba lagi.';
             }
-        }
-
-        if (!$error) {
-            $users[] = [
-                'username' => $uname,
-                'password' => password_hash($pass, PASSWORD_DEFAULT),
-                'role' => $role
-            ];
-            file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT));
-            $success = 'Registrasi berhasil! Silakan login.';
         }
     }
 }

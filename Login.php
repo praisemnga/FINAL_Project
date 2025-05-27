@@ -1,26 +1,30 @@
 <?php
 session_start();
 
-$usersFile = 'users.json';
-// Jika file belum ada, buat file dengan array kosong
-if (!file_exists($usersFile)) {
-    file_put_contents($usersFile, json_encode([]));
+// Koneksi ke database
+$mysqli = new mysqli("localhost", "root", "", "tugas_project_akhir"); 
+
+if ($mysqli->connect_errno) {
+    die("Gagal koneksi MySQL: " . $mysqli->connect_error);
 }
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $uname = $_POST['username'] ?? '';
     $pass = $_POST['password'] ?? '';
-    $users = [];
-    if (file_exists($usersFile)) {
-        $json = file_get_contents($usersFile);
-        $users = json_decode($json, true);
-        if (!is_array($users)) $users = [];
-    }
-    foreach ($users as $user) {
-        if ($user['username'] === $uname && password_verify($pass, $user['password'])) {
-            $_SESSION['username'] = $user['username'];
-            $_SESSION['role'] = $user['role'];
+
+    // Query user
+    $stmt = $mysqli->prepare("SELECT username, password, role FROM users WHERE username = ?");
+    $stmt->bind_param("s", $uname);
+    $stmt->execute();
+    $stmt->store_result();
+
+    if ($stmt->num_rows > 0) {
+        $stmt->bind_result($db_user, $db_pass, $db_role);
+        $stmt->fetch();
+        if (password_verify($pass, $db_pass)) {
+            $_SESSION['username'] = $db_user;
+            $_SESSION['role'] = $db_role;
             header('Location: index.php');
             exit;
         }
