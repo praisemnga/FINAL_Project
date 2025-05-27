@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sistem Manajemen Tugas Kelompok</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #4f46e5;
+      color: white;
+      padding: 1.5rem 2rem;
+      text-align: center;
+    }
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .section {
+      margin-bottom: 2rem;
+    }
+    h2 {
+      border-left: 4px solid #4f46e5;
+      padding-left: 0.5rem;
+      margin-bottom: 1rem;
+      color: #333;
+    }
+    ul.task-list {
+      list-style: none;
+      padding: 0;
+    }
+    ul.task-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f0f4ff;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      border-radius: 8px;
+    }
+    .task-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .task-info input[type="checkbox"] {
+      transform: scale(1.2);
+    }
+    .deadline {
+      font-size: 0.9rem;
+      color: #d32f2f;
+    }
+    .btn {
+      background: #4f46e5;
+      color: white;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .btn:hover {
+      background: #4338ca;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      margin-bottom: 0.5rem;
+    }
+    .form-group input, .form-group textarea {
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .progress-container {
+      margin-top: 1rem;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 20px;
+      background: #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: #4caf50;
+      width: 0%;
+      text-align: right;
+      padding-right: 8px;
+      color: white;
+      font-weight: bold;
+      transition: width 0.3s;
+    }
+    .dashboard-section {
+      background-color: #fefefe;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+    .dashboard-cards {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .card {
+      flex: 1 1 30%;
+      background: #f0f4ff;
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .card h3 {
+      margin: 0;
+      font-size: 2rem;
+      color: #4f46e5;
+    }
+    .card p {
+      margin: 0.5rem 0 0;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Sistem Manajemen Tugas Kelompok</h1>
+    <p>Kelola tugas dengan efisien — untuk anggota dan ketua tim</p>
+  </header>
+
+  <div class="container">
+    <div class="section">
+      <h2>📋 Tugas Anggota</h2>
+      <ul class="task-list">
+        <li>
+          <div class="task-info">
+            <input type="checkbox" />
+            <span>Kerjakan laporan bab 1</span>
+          </div>
+          <span class="deadline">Deadline: 30 Mei</span>
+        </li>
+        <li>
+          <div class="task-info">
+            <input type="checkbox" checked />
+            <span>Diskusi materi presentasi</span>
+          </div>
+          <span class="deadline">Deadline: 28 Mei</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>⚙️ Panel Admin (Ketua)</h2>
+      <form>
+        <div class="form-group">
+          <label for="task">Tugas Baru</label>
+          <input type="text" id="task" placeholder="Masukkan nama tugas..." />
+        </div>
+        <div class="form-group">
+          <label for="deadline">Deadline</label>
+          <input type="date" id="deadline" />
+        </div>
+        <button type="submit" class="btn">Tambah Tugas</button>
+      </form>
+
+      <div class="progress-container">
+        <p>📊 Progres Tugas Kelompok</p>
+        <div class="progress-bar">
+          <div class="progress-fill">0%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section dashboard-section">
+      <h2>📈 Dashboard Tugas</h2>
+      <div class="dashboard-cards">
+        <div class="card">
+          <h3 id="total-tugas">0</h3>
+          <p>Total Tugas</p>
+        </div>
+        <div class="card">
+          <h3 id="tugas-selesai">0</h3>
+          <p>Selesai</p>
+        </div>
+        <div class="card">
+          <h3 id="tugas-belum">0</h3>
+          <p>Belum Selesai</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function updateDashboard() {
+      const tasks = document.querySelectorAll(".task-list li");
+      const total = tasks.length;
+      let selesai = 0;
+
+      tasks.forEach(task => {
+        const checkbox = task.querySelector("input[type='checkbox']");
+        if (checkbox.checked) selesai++;
+      });
+
+      const belum = total - selesai;
+
+      document.getElementById("total-tugas").textContent = total;
+      document.getElementById("tugas-selesai").textContent = selesai;
+      document.getElementById("tugas-belum").textContent = belum;
+
+      const progressFill = document.querySelector(".progress-fill");
+      const persen = total > 0 ? Math.round((selesai / total) * 100) : 0;
+      progressFill.style.width = persen + "%";
+      progressFill.textContent = persen + "%";
+    }
+
+    document.querySelector("form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const taskName = document.getElementById("task").value.trim();
+      const deadline = document.getElementById("deadline").value;
+
+      if (!taskName || !deadline) {
+        alert("Isi semua kolom!");
+        return;
+      }
+
+      const taskList = document.querySelector(".task-list");
+
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <div class="task-info">
+          <input type="checkbox" />
+          <span>${taskName}</span>
+        </div>
+        <span class="deadline">Deadline: ${deadline}</span>
+      `;
+
+      taskList.appendChild(li);
+
+      document.getElementById("task").value = "";
+      document.getElementById("deadline").value = "";
+
+      updateDashboard();
+    });
+
+    document.querySelector(".task-list").addEventListener("change", function(e) {
+      if (e.target.type === "checkbox") {
+        updateDashboard();
+      }
+    });
+
+    window.addEventListener("DOMContentLoaded", updateDashboard);
+  </script>
+</body>
+</html>
