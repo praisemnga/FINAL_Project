@@ -213,3 +213,73 @@ ul.task-list li {
   text-decoration: line-through;
   color: #888;
 }
+
+
+/* Responsive mobile styles */
+@media (max-width: 700px) {
+  .container {
+    padding: 0.5rem;
+    margin: 0.5rem;
+    max-width: 100vw;
+  }
+  header {
+    padding: 1rem 0.5rem;
+    font-size: 1rem;
+  }
+  h1 {
+    font-size: 1.2rem;
+  }
+  .section {
+    margin-bottom: 1rem;
+    padding: 0.5rem 0;
+  }
+  .dashboard-cards {
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .card {
+    flex: 1 1 100%;
+    padding: 0.7rem;
+    font-size: 1rem;
+  }
+  ul.task-list li {
+    padding: 10px 8px 8px 8px;
+    font-size: 0.98em;
+  }
+  .task-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .attachments {
+    font-size: 0.97em;
+  }
+  .upload-form {
+    flex-direction: column;
+    gap: 4px;
+    align-items: stretch;
+  }
+  .broadcast-box {
+    padding: 0.7rem 0.7rem;
+    font-size: 0.98em;
+  }
+  .progress-bar {
+    height: 16px;
+  }
+  .progress-fill {
+    font-size: 0.95em;
+    padding-right: 4px;
+  }
+  .form-group input, .form-group textarea {
+    font-size: 1em;
+  }
+  .btn {
+    width: 100%;
+    padding: 0.5rem 0;
+    font-size: 1em;
+  }
+  .profile-box {
+    margin: 20px auto;
+    padding: 1rem;
+  }
+}
