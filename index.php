@@ -126,34 +126,32 @@ if ($row = $res->fetch_assoc()) {
         </div>
         <button type="submit" name="kirim_broadcast" class="btn">Kirim Broadcast</button>
       </form>`
-
-      <div class="progress-container">
-        <p>📊 Progres Tugas Kelompok</p>
-        <div class="progress-bar">
-          <div class="progress-fill">0%</div>
-        </div>
-      </div>
-    </div>
     <?php endif; ?>
 
-    <div class="section dashboard-section">
-      <h2>📈 Dashboard Tugas</h2>
-      <div class="dashboard-cards">
-        <div class="card">
-          <h3 id="total-tugas">0</h3>
-          <p>Total Tugas</p>
-        </div>
-        <div class="card">
-          <h3 id="tugas-selesai">0</h3>
-          <p>Selesai</p>
-        </div>
-        <div class="card">
-          <h3 id="tugas-belum">0</h3>
-          <p>Belum Selesai</p>
-        </div>
-      </div>
-    </div>
-  </div>
+    <div class="progress-container">
+            <p>📊 Progres Tugas Kelompok</p>
+            <div class="progress-bar">
+              <div class="progress-fill">0%</div>
+            </div>
+          </div>
+
+          <div class="section dashboard-section">
+            <h2>📈 Dashboard Tugas</h2>
+            <div class="dashboard-cards">
+              <div class="card">
+                <h3 id="total-tugas">0</h3>
+                <p>Total Tugas</p>
+              </div>
+              <div class="card">
+                <h3 id="tugas-selesai">0</h3>
+                <p>Selesai</p>
+              </div>
+              <div class="card">
+                <h3 id="tugas-belum">0</h3>
+                <p>Belum Selesai</p>
+              </div>
+            </div>
+          </div>
 
   <script src="script.js"></script>
 </body>
