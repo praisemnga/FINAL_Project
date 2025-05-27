@@ -30,8 +30,28 @@ if ($row = $res->fetch_assoc()) {
     $pesan_broadcast = $row['message'];
     $waktu_broadcast = date('d M Y H:i', strtotime($row['created_at']));
 }
-?>
 
+if ($role === 'ketua' && isset($_POST['tambah_tugas'])) {
+    $taskName = trim($_POST['task'] ?? '');
+    $deadline = $_POST['deadline'] ?? null;
+    if ($taskName && $deadline) {
+        $stmt = $mysqli->prepare("INSERT INTO tasks (name, deadline) VALUES (?, ?)");
+        $stmt->bind_param("ss", $taskName, $deadline);
+        $stmt->execute();
+        $stmt->close();
+        header("Location: index.php"); 
+        exit;
+    }
+}
+
+$tasks = [];
+$res = $mysqli->query("SELECT name, deadline FROM tasks");
+if ($res) {
+    while ($row = $res->fetch_assoc()) {
+        $tasks[] = $row;
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -50,56 +70,45 @@ if ($row = $res->fetch_assoc()) {
 
   <div class="container">
   <?php if ($pesan_broadcast): ?>
-    <div style="background:#e3e0ff;color:#2d217c;padding:1rem 1.5rem;border-radius:8px;margin-bottom:1.5rem;box-shadow:0 2px 8px #0001;">
-      <strong>📢 Broadcast:</strong> <?= htmlspecialchars($pesan_broadcast) ?>
-      <span style="float:right;font-size:0.95em;color:#6b6b6b;"><?= $waktu_broadcast ?></span>
-    </div>
+  <div class="broadcast-box">
+    <strong>📢 Broadcast:</strong> <?= htmlspecialchars($pesan_broadcast) ?>
+    <span class="broadcast-time"><?= $waktu_broadcast ?></span>
+  </div>
   <?php endif; ?>
 
   <div class="section">
       <h2>📋 Tugas Anggota</h2>
       <ul class="task-list">
-        <?php
-          $tasks = [
-            ['name' => 'Kerjakan laporan bab 1', 'deadline' => '30 Mei'],
-            ['name' => 'Diskusi materi presentasi', 'deadline' => '28 Mei']
-          ];
-          // Ambil lampiran dari database
-          $attachments = [];
-          $res = $mysqli->query("SELECT * FROM attachments");
-          while ($row = $res->fetch_assoc()) {
-            $attachments[$row['task_name']][] = $row;
-          }
-          foreach ($tasks as $task) :
-            $taskName = $task['name'];
+        <?php foreach ($tasks as $task): 
+          $taskName = $task['name'];
         ?>
-        <li>
-          <div class="task-info">
-            <input type="checkbox" />
-            <span><?= htmlspecialchars($taskName) ?></span>
-          </div>
-          <span class="deadline">Deadline: <?= htmlspecialchars($task['deadline']) ?></span>
-          <!-- Daftar lampiran -->
-          <?php if (!empty($attachments[$taskName])): ?>
-            <div style="margin-top:8px;">
-              <strong>Lampiran:</strong>
-              <ul style="margin:0;padding-left:18px;">
-                <?php foreach ($attachments[$taskName] as $att): ?>
-                  <li>
-                    <a href="uploads/<?= htmlspecialchars($att['filename']) ?>" target="_blank"><?= htmlspecialchars($att['filename']) ?></a>
-                    <span style="color:#888;font-size:0.9em;">(<?= htmlspecialchars($att['uploaded_by']) ?>)</span>
-                  </li>
-                <?php endforeach; ?>
-              </ul>
+          <li>
+            <div class="task-row">
+              <div class="task-info">
+                <input type="checkbox" />
+                <span class="task-title"><?= htmlspecialchars($taskName) ?></span>
+              </div>
+              <span class="deadline"><?= htmlspecialchars($task['deadline']) ? "Deadline: " . htmlspecialchars($task['deadline']) : "" ?></span>
             </div>
-          <?php endif; ?>
-          
-          <!-- Form upload lampiran -->
-          <form action="Uploads/upload_file.php" method="post" enctype="multipart/form-data" style="margin-top:8px;">            <input type="hidden" name="task" value="<?= htmlspecialchars($taskName) ?>">
-            <input type="file" name="lampiran" required>
-            <button type="submit" class="btn" style="padding:2px 10px;font-size:0.95em;">Upload</button>
-          </form>
-        </li>
+            <?php if (!empty($attachments[$taskName])): ?>
+              <div class="attachments">
+                <strong>Lampiran:</strong>
+                <ul class="attachment-list">
+                  <?php foreach ($attachments[$taskName] as $att): ?>
+                    <li>
+                      <a href="uploads/<?= htmlspecialchars($att['filename']) ?>" target="_blank"><?= htmlspecialchars($att['filename']) ?></a>
+                      <span class="uploaded-by">oleh <b><?= htmlspecialchars($att['uploaded_by']) ?></b></span>
+                    </li>
+                  <?php endforeach; ?>
+                </ul>
+              </div>
+            <?php endif; ?>
+            <form action="Uploads/upload_file.php" method="post" enctype="multipart/form-data" class="upload-form">
+              <input type="hidden" name="task" value="<?= htmlspecialchars($taskName) ?>">
+              <input type="file" name="lampiran" required>
+              <button type="submit" class="btn">Upload</button>
+            </form>
+          </li>
         <?php endforeach; ?>
       </ul>
 
@@ -107,16 +116,16 @@ if ($row = $res->fetch_assoc()) {
     <?php if ($role === 'ketua'): ?>
     <div class="section">
       <h2>⚙️ Panel Admin (Ketua)</h2>
-      <form>
+      <form method="post">
         <div class="form-group">
           <label for="task">Tugas Baru</label>
-          <input type="text" id="task" placeholder="Masukkan nama tugas..." />
+          <input type="text" id="task" name="task" placeholder="Masukkan nama tugas..." required />
         </div>
         <div class="form-group">
           <label for="deadline">Deadline</label>
-          <input type="date" id="deadline" />
+          <input type="date" id="deadline" name="deadline" required />
         </div>
-        <button type="submit" class="btn">Tambah Tugas</button>
+        <button type="submit" name="tambah_tugas" class="btn">Tambah Tugas</button>
       </form>
 
       <form method="post" style="margin-top:1.5rem;">
