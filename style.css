@@ -321,3 +321,50 @@ ul.task-list li {
     margin-top: -40px;
   }
 }
+
+/* Docs Link Box */
+.docs-link-box {
+  background: #e8f0fe;
+  border: 1.5px solid #4285f4;
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin: 10px 0 0 0;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  box-shadow: 0 2px 8px #0001;
+  max-width: 420px;
+}
+
+.docs-link-label {
+  font-weight: bold;
+  color: #1967d2;
+  margin-right: 10px;
+  font-size: 1.08em;
+}
+
+.docs-link-btn {
+  display: inline-flex;
+  align-items: center;
+  background: #4285f4;
+  color: #fff;
+  padding: 8px 18px 8px 12px;
+  border-radius: 6px;
+  font-weight: 500;
+  text-decoration: none;
+  font-size: 1em;
+  transition: background 0.2s;
+  box-shadow: 0 1px 4px #0001;
+  gap: 8px;
+}
+.docs-link-btn:hover {
+  background: #1967d2;
+  color: #fff;
+  text-decoration: none;
+}
+.docs-link-icon {
+  width: 22px;
+  height: 22px;
+  margin-right: 6px;
+  vertical-align: middle;
+}

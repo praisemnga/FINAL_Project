@@ -22,6 +22,7 @@ if ($role === 'ketua' && isset($_POST['kirim_broadcast'])) {
         $stmt->close();
     }
 }
+
 // Ambil pesan broadcast terbaru
 $pesan_broadcast = '';
 $waktu_broadcast = '';
@@ -35,7 +36,14 @@ if ($role === 'ketua' && isset($_POST['tambah_tugas'])) {
     $taskName = trim($_POST['task'] ?? '');
     $deadline = $_POST['deadline'] ?? null;
     if ($taskName && $deadline) {
-        // Insert tugas baru tanpa cek nama unik
+        $stmt = $mysqli->prepare("INSERT INTO tasks (name, deadline) VALUES (?, ?)");
+        $stmt->bind_param("ss", $taskName, $deadline);
+        $stmt->execute();
+        $stmt->close();
+        header("Location: index.php"); 
+        exit;
+
+        // Insert tugas baru 
         $stmt = $mysqli->prepare("INSERT INTO tasks (name, deadline) VALUES (?, ?)");
         $stmt->bind_param("ss", $taskName, $deadline);
         $stmt->execute();
@@ -70,6 +78,14 @@ $res = $mysqli->query("SELECT name, deadline, is_done FROM tasks WHERE is_done=0
 if ($res) {
     while ($row = $res->fetch_assoc()) {
         $tasks[] = $row;
+    }
+}
+
+$docs_links = [];
+$res = $mysqli->query("SELECT task_name, link FROM docs_links");
+if ($res) {
+    while ($row = $res->fetch_assoc()) {
+        $docs_links[$row['task_name']] = $row['link'];
     }
 }
 
@@ -157,6 +173,26 @@ if ($res) {
             <input type="file" name="lampiran" required>
             <button type="submit" class="btn" style="background:#388e3c;">Upload Hasil</button>
           </form>
+
+          <!-- Form input link Google Docs (khusus ketua) -->
+          <?php if ($role === 'ketua'): ?>
+            <form method="post" style="margin-top:8px;">
+              <input type="hidden" name="task_docs" value="<?= htmlspecialchars($taskName) ?>">
+              <input type="url" name="docs_link" placeholder="Paste link Google Docs di sini" required style="width:70%;">
+              <button type="submit" name="simpan_docs" class="btn" style="background:#0b8043;">Simpan Link Docs</button>
+            </form>
+          <?php endif; ?>
+
+          <!-- Tampikan Link Google Docs -->
+          <?php if (!empty($docs_links[$taskName])): ?>
+            <div class="docs-link-box">
+              <span class="docs-link-label">Google Docs Kolaborasi:</span>
+              <a class="docs-link-btn" href="<?= htmlspecialchars($docs_links[$taskName]) ?>" target="_blank">
+                <img src="https://ssl.gstatic.com/docs/doclist/images/mediatype/icon_1_document_x32.png" alt="Google Docs" class="docs-link-icon">
+                Buka Google Docs
+              </a>
+            </div>
+          <?php endif; ?>
 
           <!-- Daftar lampiran instruksi -->
           <?php if (!empty($attachments[$taskName])): ?>
