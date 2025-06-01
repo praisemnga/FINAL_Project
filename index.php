@@ -135,7 +135,7 @@ if ($res) {
   <header>
     <h1>Sistem Manajemen Tugas Kelompok</h1>
     <p>Kelola tugas dengan efisien — untuk anggota dan ketua tim</p>
-    <a href="anggota.html" style="float:right;color:#fff;text-decoration:none;margin-top:-2rem;margin-right:180px;">Anggota Kelompok</a>
+    <a href="anggota.html" style="float:right;color:#fff;text-decoration:none;margin-top:-2rem;margin-right:180px;">Informasi Pengembang Website</a>
     <a href="profile.php" style="float:right;color:#fff;text-decoration:none;margin-top:-2rem;margin-right:90px;">Profil</a>
     <a href="logout.php" style="float:right;color:#fff;text-decoration:none;margin-top:-2rem;">Logout</a>
   </header>
