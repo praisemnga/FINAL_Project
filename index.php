@@ -32,6 +32,32 @@ if ($row = $res->fetch_assoc()) {
     $waktu_broadcast = date('d M Y H:i', strtotime($row['created_at']));
 }
 
+// Proses Upload Dokumen
+if ($role === 'ketua' && isset($_POST['simpan_docs'])) {
+    $taskDocs = $_POST['task_docs'] ?? '';
+    $docsLink = trim($_POST['docs_link'] ?? '');
+    if ($taskDocs && $docsLink) {
+        $stmt = $mysqli->prepare("SELECT id FROM docs_links WHERE task_name=?");
+        $stmt->bind_param("s", $taskDocs);
+        $stmt->execute();
+        $stmt->store_result();
+        if ($stmt->num_rows > 0) {
+            $stmt->close();
+            $stmt = $mysqli->prepare("UPDATE docs_links SET link=? WHERE task_name=?");
+            $stmt->bind_param("ss", $docsLink, $taskDocs);
+            $stmt->execute();
+        } else {
+            $stmt->close();
+            $stmt = $mysqli->prepare("INSERT INTO docs_links (task_name, link) VALUES (?, ?)");
+            $stmt->bind_param("ss", $taskDocs, $docsLink);
+            $stmt->execute();
+        }
+        $stmt->close();
+        header("Location: index.php");
+        exit;
+    }
+}
+
 if ($role === 'ketua' && isset($_POST['tambah_tugas'])) {
     $taskName = trim($_POST['task'] ?? '');
     $deadline = $_POST['deadline'] ?? null;
