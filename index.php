@@ -165,7 +165,7 @@ if ($res) {
           <span class="deadline"><?= htmlspecialchars($task['deadline']) ? "Deadline: " . htmlspecialchars($task['deadline']) : "" ?></span>
            <?php if (!$isDone): ?>
               <?php if ($role === 'anggota' && !$anggotaDone): ?>
-                <form method="post" style="display:inline;">
+                <form method="post">
                   <input type="hidden" name="anggota_selesai" value="<?= htmlspecialchars($taskName) ?>">
                   <button type="submit" class="btn" style="background:#0288d1;">Sudah Dikerjakan</button>
                 </form>
@@ -174,7 +174,7 @@ if ($res) {
               <?php endif; ?>
 
               <?php if ($role === 'ketua'): ?>
-                <form method="post" style="display:inline;">
+                <form method="post">
                   <input type="hidden" name="selesai_tugas" value="<?= htmlspecialchars($taskName) ?>">
                   <button type="submit" class="btn" style="background:#43a047;">Selesaikan</button>
                 </form>
