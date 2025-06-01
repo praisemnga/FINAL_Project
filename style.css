@@ -368,3 +368,38 @@ ul.task-list li {
   margin-right: 6px;
   vertical-align: middle;
 }
+
+/* Form input link Google Docs */
+.docs-link-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  background: #f4f8fd;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1.2px solid #b6ccfa;
+  max-width: 420px;
+  box-shadow: 0 1px 4px #0001;
+}
+.docs-link-input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1.2px solid #b6ccfa;
+  border-radius: 6px;
+  font-size: 1em;
+  background: #fff;
+}
+.docs-link-save {
+  background: #1967d2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.docs-link-save:hover {
+  background: #174ea6;
+}

@@ -176,10 +176,10 @@ if ($res) {
 
           <!-- Form input link Google Docs (khusus ketua) -->
           <?php if ($role === 'ketua'): ?>
-            <form method="post" style="margin-top:8px;">
+            <form method="post" class="docs-link-form" style="margin-top:8px;">
               <input type="hidden" name="task_docs" value="<?= htmlspecialchars($taskName) ?>">
-              <input type="url" name="docs_link" placeholder="Paste link Google Docs di sini" required style="width:70%;">
-              <button type="submit" name="simpan_docs" class="btn" style="background:#0b8043;">Simpan Link Docs</button>
+              <input type="url" name="docs_link" class="docs-link-input" placeholder="Paste link Google Docs di sini" required>
+              <button type="submit" name="simpan_docs" class="btn docs-link-save">Simpan Link Docs</button>
             </form>
           <?php endif; ?>
 
