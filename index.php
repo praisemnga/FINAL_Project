@@ -45,6 +45,16 @@ if ($role === 'ketua' && isset($_POST['tambah_tugas'])) {
     }
 }
 
+if ($role === 'anggota' && isset($_POST['anggota_selesai'])) {
+    $anggotaTask = $_POST['anggota_selesai'];
+    $stmt = $mysqli->prepare("UPDATE tasks SET anggota_done=1 WHERE name=?");
+    $stmt->bind_param("s", $anggotaTask);
+    $stmt->execute();
+    $stmt->close();
+    header("Location: index.php");
+    exit;
+}
+
 if (isset($_POST['selesai_tugas'])) {
     $selesaiTask = $_POST['selesai_tugas'];
     $stmt = $mysqli->prepare("UPDATE tasks SET is_done=1 WHERE name=?");
@@ -98,47 +108,46 @@ if ($res) {
   <div class="section">
       <h2>📋 Tugas Anggota</h2>
       <ul class="task-list">
-        <?php foreach ($tasks as $task): 
-          $taskName = $task['name'];
-          $isDone = isset($task['is_done']) ? $task['is_done'] : 0;
-        ?>
-          <li>
-            <div class="task-row">
-              <div class="task-info">
-                <input type="checkbox" disabled <?= $isDone ? 'checked' : '' ?> />
-                <span class="task-title<?= $isDone ? ' selesai' : '' ?>">
-                  <?= htmlspecialchars($taskName) ?><?= $isDone ? ' (Selesai)' : '' ?>
-                </span>
-              </div>
-              <span class="deadline"><?= htmlspecialchars($task['deadline']) ? "Deadline: " . htmlspecialchars($task['deadline']) : "" ?></span>
-              <?php if (!$isDone): ?>
-              <form method="post" style="display:inline;">
-                <input type="hidden" name="selesai_tugas" value="<?= htmlspecialchars($taskName) ?>">
-                <button type="submit" class="btn" style="background:#43a047;">Selesai</button>
-              </form>
+      <?php foreach ($tasks as $task): 
+        $taskName = $task['name'];
+        $isDone = isset($task['is_done']) ? $task['is_done'] : 0;
+        $anggotaDone = isset($task['anggota_done']) ? $task['anggota_done'] : 0;
+      ?>
+        <li>
+          <div class="task-row">
+            <div class="task-info">
+             <input type="checkbox" disabled <?= $isDone ? 'checked' : '' ?> />
+             <span class="task-title<?= $isDone ? ' selesai' : '' ?>">
+               <?= htmlspecialchars($taskName) ?><?= $isDone ? ' (Selesai)' : '' ?>
+             </span>
+          </div>
+          <span class="deadline"><?= htmlspecialchars($task['deadline']) ? "Deadline: " . htmlspecialchars($task['deadline']) : "" ?></span>
+           <?php if (!$isDone): ?>
+              <?php if ($role === 'anggota' && !$anggotaDone): ?>
+                <form method="post" style="display:inline;">
+                  <input type="hidden" name="anggota_selesai" value="<?= htmlspecialchars($taskName) ?>">
+                  <button type="submit" class="btn" style="background:#0288d1;">Sudah Dikerjakan</button>
+                </form>
+              <?php elseif ($role === 'anggota' && $anggotaDone): ?>
+                <span style="color:#0288d1;font-weight:bold;">Sudah Dikerjakan</span>
               <?php endif; ?>
-            </div>
-            <?php if (!empty($attachments[$taskName])): ?>
-              <div class="attachments">
-                <strong>Lampiran:</strong>
-                <ul class="attachment-list">
-                  <?php foreach ($attachments[$taskName] as $att): ?>
-                    <li>
-                      <a href="uploads/<?= htmlspecialchars($att['filename']) ?>" target="_blank"><?= htmlspecialchars($att['filename']) ?></a>
-                      <span class="uploaded-by">oleh <b><?= htmlspecialchars($att['uploaded_by']) ?></b></span>
-                    </li>
-                  <?php endforeach; ?>
-                </ul>
-              </div>
+
+              <?php if ($role === 'ketua'): ?>
+                <form method="post" style="display:inline;">
+                  <input type="hidden" name="selesai_tugas" value="<?= htmlspecialchars($taskName) ?>">
+                  <button type="submit" class="btn" style="background:#43a047;">Selesaikan</button>
+                </form>
+              <?php endif; ?>
             <?php endif; ?>
+          </div>
             <form action="Uploads/upload_file.php" method="post" enctype="multipart/form-data" class="upload-form">
               <input type="hidden" name="task" value="<?= htmlspecialchars($taskName) ?>">
               <input type="file" name="lampiran" required>
               <button type="submit" class="btn">Upload</button>
             </form>
-          </li>
-        <?php endforeach; ?>
-      </ul>     
+        </li>
+      <?php endforeach; ?>
+      </ul> 
 
     <?php if ($role === 'ketua'): ?>
     <div class="section">
