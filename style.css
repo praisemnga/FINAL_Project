@@ -31,6 +31,108 @@ h2 {
   margin-bottom: 1rem;
   color: #333;
 }
+
+body {
+  background: #f4f6f8;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+.anggota-container {
+  max-width: 650px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 10px #0001;
+  padding: 2rem 2.5rem;
+}
+h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #4f46e5;
+  font-size: 2rem;
+}
+
+/* Anggota List Styles */
+ul.anggota-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+ul.anggota-list li {
+  padding: 1.2rem 0.5rem;
+  border-bottom: 1px solid #e0e7ef;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: background 0.2s;
+}
+ul.anggota-list li:last-child {
+  border-bottom: none;
+}
+.anggota-nama {
+  font-weight: bold;
+  font-size: 1.2em;
+  color: #222;
+}
+.anggota-role {
+  display: inline-block;
+  background: #4f46e5;
+  color: #fff;
+  border-radius: 12px;
+  padding: 2px 14px;
+  font-size: 0.98em;
+  margin-top: 2px;
+}
+.anggota-nim {
+  color: #555;
+  font-size: 0.98em;
+}
+.anggota-email, .anggota-telp {
+  color: #444;
+  font-size: 0.97em;
+}
+.anggota-kontribusi {
+  font-size: 0.97em;
+  color: #1967d2;
+}
+.btn-kembali {
+  display: inline-block;
+  margin: 2rem auto 0;
+  background: #4f46e5;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7rem 2.2rem;
+  font-size: 1.1em;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-align: center;
+}
+.btn-kembali:hover {
+  background: #3730a3;
+}
+ul.anggota-list li:hover {
+  background: #f0f4ff;
+}
+@media (max-width: 700px) {
+  .anggota-container {
+    padding: 1rem 0.5rem;
+    margin: 10px 0;
+  }
+  h2 {
+    font-size: 1.3rem;
+  }
+  .btn-kembali {
+    width: 100%;
+    padding: 0.7rem 0;
+    font-size: 1em;
+  }
+}
+
+/* Task List Styles */
 ul.task-list {
   list-style: none;
   padding: 0;
@@ -46,12 +148,16 @@ ul.task-list li {
 }
 .task-info {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 0.75rem;
+  gap: 16px;
+  justify-content: center;
+  width: 100%;
 }
 .task-info input[type="checkbox"] {
   transform: scale(1.2);
 }
+
 .deadline {
   font-size: 0.9rem;
   color: #d32f2f;
@@ -68,6 +174,7 @@ ul.task-list li {
 .btn:hover {
   background: #4338ca;
 }
+/* Profile Box */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -113,6 +220,8 @@ ul.task-list li {
   flex-wrap: wrap;
   margin-bottom: 1rem;
 }
+
+/* Dashboard Card */
 .card {
   flex: 1 1 30%;
   background: #f0f4ff;
@@ -154,57 +263,89 @@ ul.task-list {
   margin: 0;
 }
 ul.task-list li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   background: #f6f8ff;
   border-radius: 10px;
   margin-bottom: 18px;
-  padding: 18px 20px 14px 20px;
+  padding: 24px 24px 18px 24px;
   box-shadow: 0 2px 8px #0001;
+  gap: 14px;
+}
+
+.task-row {
+  width: 100%;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 8px;
 }
-.task-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-}
+
 .task-title {
-  font-size: 1.08em;
-  font-weight: 500;
-  margin-left: 8px;
+  font-size: 1.25em;
+  font-weight: 600;
+  margin-left: 0;
 }
+
 .deadline {
   color: #e53935;
   font-weight: 500;
-  font-size: 1em;
+  font-size: 1.08em;
+  margin-left: 12px;
 }
+
+/* Task status */
 .attachments {
-  margin: 4px 0 0 0;
+  width: 100%;
+  margin-top: 10px;
+  text-align: center;
 }
+
 .attachment-list {
-  margin: 4px 0 0 0;
-  padding-left: 20px;
-  list-style: square;
+  margin: 8px 0 0 0;
+  padding-left: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
+
 .attachment-list li {
-  margin-bottom: 2px;
+  margin-bottom: 6px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px 18px;
+  box-shadow: 0 1px 6px #0001;
+  width: 90%;
+  max-width: 420px;
 }
+
 .attachment-list a {
   color: #2d217c;
   text-decoration: underline;
 }
+ 
+.task-row form,
+.upload-form,
+.docs-link-form {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 0;
+}
+
+/* Upload styles */
 .uploaded-by {
   color: #888;
   font-size: 0.92em;
   margin-left: 4px;
 }
 .upload-form {
-  margin-top: 6px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  margin-top: 0;
 }
+
 .upload-form input[type="file"] {
   flex: 1;
 }
@@ -212,6 +353,74 @@ ul.task-list li {
 .task-title.selesai {
   text-decoration: line-through;
   color: #888;
+}
+
+
+/* Form input link Google Docs */
+.docs-link-form {
+  margin-top: 0;
+}
+.docs-link-input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1.2px solid #b6ccfa;
+  border-radius: 6px;
+  font-size: 1em;
+  background: #fff;
+}
+.docs-link-save {
+  background: #1967d2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.docs-link-save:hover {
+  background: #174ea6;
+}
+
+/* Docs Link Box */
+.docs-link-box {
+  margin: 0;
+  margin-top: 8px;
+  width: 100%;
+  justify-content: center;
+}
+
+.docs-link-label {
+  font-weight: bold;
+  color: #1967d2;
+  margin-right: 10px;
+  font-size: 1.08em;
+}
+
+.docs-link-btn {
+  display: inline-flex;
+  align-items: center;
+  background: #4285f4;
+  color: #fff;
+  padding: 8px 18px 8px 12px;
+  border-radius: 6px;
+  font-weight: 500;
+  text-decoration: none;
+  font-size: 1em;
+  transition: background 0.2s;
+  box-shadow: 0 1px 4px #0001;
+  gap: 8px;
+}
+.docs-link-btn:hover {
+  background: #1967d2;
+  color: #fff;
+  text-decoration: none;
+}
+.docs-link-icon {
+  width: 22px;
+  height: 22px;
+  margin-right: 6px;
+  vertical-align: middle;
 }
 
 
@@ -322,84 +531,3 @@ ul.task-list li {
   }
 }
 
-/* Docs Link Box */
-.docs-link-box {
-  background: #e8f0fe;
-  border: 1.5px solid #4285f4;
-  border-radius: 10px;
-  padding: 14px 18px;
-  margin: 10px 0 0 0;
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  box-shadow: 0 2px 8px #0001;
-  max-width: 420px;
-}
-
-.docs-link-label {
-  font-weight: bold;
-  color: #1967d2;
-  margin-right: 10px;
-  font-size: 1.08em;
-}
-
-.docs-link-btn {
-  display: inline-flex;
-  align-items: center;
-  background: #4285f4;
-  color: #fff;
-  padding: 8px 18px 8px 12px;
-  border-radius: 6px;
-  font-weight: 500;
-  text-decoration: none;
-  font-size: 1em;
-  transition: background 0.2s;
-  box-shadow: 0 1px 4px #0001;
-  gap: 8px;
-}
-.docs-link-btn:hover {
-  background: #1967d2;
-  color: #fff;
-  text-decoration: none;
-}
-.docs-link-icon {
-  width: 22px;
-  height: 22px;
-  margin-right: 6px;
-  vertical-align: middle;
-}
-
-/* Form input link Google Docs */
-.docs-link-form {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 8px;
-  background: #f4f8fd;
-  padding: 10px 14px;
-  border-radius: 8px;
-  border: 1.2px solid #b6ccfa;
-  max-width: 420px;
-  box-shadow: 0 1px 4px #0001;
-}
-.docs-link-input {
-  flex: 1;
-  padding: 8px 10px;
-  border: 1.2px solid #b6ccfa;
-  border-radius: 6px;
-  font-size: 1em;
-  background: #fff;
-}
-.docs-link-save {
-  background: #1967d2;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.docs-link-save:hover {
-  background: #174ea6;
-}
