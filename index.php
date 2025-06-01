@@ -158,7 +158,6 @@ if ($res) {
         <li>
           <div class="task-row">
             <div class="task-info">
-             <input type="checkbox" disabled <?= $isDone ? 'checked' : '' ?> />
              <span class="task-title<?= $isDone ? ' selesai' : '' ?>">
                <?= htmlspecialchars($taskName) ?><?= $isDone ? ' (Selesai)' : '' ?>
              </span>
