@@ -140,14 +140,60 @@ if ($res) {
               <?php endif; ?>
             <?php endif; ?>
           </div>
+          <!-- Upload instruksi (khusus ketua) -->
+          <?php if ($role === 'ketua'): ?>
             <form action="Uploads/upload_file.php" method="post" enctype="multipart/form-data" class="upload-form">
               <input type="hidden" name="task" value="<?= htmlspecialchars($taskName) ?>">
+              <input type="hidden" name="type" value="instruksi">
               <input type="file" name="lampiran" required>
-              <button type="submit" class="btn">Upload</button>
+              <button type="submit" class="btn" style="background:#4f46e5;">Upload Instruksi</button>
             </form>
+          <?php endif; ?>
+
+          <!-- Upload hasil tugas (anggota & ketua) -->
+          <form action="Uploads/upload_file.php" method="post" enctype="multipart/form-data" class="upload-form">
+            <input type="hidden" name="task" value="<?= htmlspecialchars($taskName) ?>">
+            <input type="hidden" name="type" value="hasil">
+            <input type="file" name="lampiran" required>
+            <button type="submit" class="btn" style="background:#388e3c;">Upload Hasil</button>
+          </form>
+
+          <!-- Daftar lampiran instruksi -->
+          <?php if (!empty($attachments[$taskName])): ?>
+            <div class="attachments">
+              <strong>Instruksi:</strong>
+              <ul class="attachment-list">
+                <?php foreach ($attachments[$taskName] as $att): ?>
+                  <?php if ($att['type'] === 'instruksi'): ?>
+                    <li>
+                      <a href="uploads/<?= htmlspecialchars($att['filename']) ?>" target="_blank"><?= htmlspecialchars($att['filename']) ?></a>
+                      <span class="uploaded-by">(oleh <?= htmlspecialchars($att['uploaded_by']) ?>)</span>
+                    </li>
+                  <?php endif; ?>
+                <?php endforeach; ?>
+              </ul>
+            </div>
+          <?php endif; ?>
+
+          <!-- Daftar lampiran hasil -->
+          <?php if (!empty($attachments[$taskName])): ?>
+            <div class="attachments">
+              <strong>Hasil Tugas:</strong>
+              <ul class="attachment-list">
+                <?php foreach ($attachments[$taskName] as $att): ?>
+                  <?php if ($att['type'] === 'hasil'): ?>
+                    <li>
+                      <a href="uploads/<?= htmlspecialchars($att['filename']) ?>" target="_blank"><?= htmlspecialchars($att['filename']) ?></a>
+                      <span class="uploaded-by">(oleh <?= htmlspecialchars($att['uploaded_by']) ?>)</span>
+                    </li>
+                  <?php endif; ?>
+                <?php endforeach; ?>
+              </ul>
+            </div>
+          <?php endif; ?>
         </li>
       <?php endforeach; ?>
-      </ul> 
+      </ul>          
 
     <?php if ($role === 'ketua'): ?>
     <div class="section">
