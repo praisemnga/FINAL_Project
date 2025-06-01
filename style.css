@@ -58,6 +58,28 @@ ul.anggota-list li {
 ul.anggota-list li:last-child {
   border-bottom: none;
 }
+.web-info {
+  background: #f0f4ff;
+  border-radius: 10px;
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 6px #0001;
+  max-width: 650px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.anggota-foto {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #4f46e5;
+  margin-bottom: 8px;
+  background: #fff;
+  box-shadow: 0 1px 6px #0001;
+}
+
 .anggota-nama {
   font-weight: bold;
   font-size: 1.2em;
