@@ -6,7 +6,7 @@ const anggota = [
     telp: "0821-9131-5664",
   },
   {
-    nama: "Vania Esther Saleletang",
+    nama: "VANIA ESTHER SALELETANG",
     nim: "230211060012",
     email: "vaniasaleletang026@student.unsrat.ac.id",
     telp: "0813-4214-9692",
