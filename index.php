@@ -79,6 +79,44 @@ if ($role === 'ketua' && isset($_POST['tambah_tugas'])) {
     }
 }
 
+// Proses hapus tugas
+if ($role === 'ketua' && isset($_POST['hapus_tugas'])) {
+    $hapusTask = $_POST['hapus_tugas'];
+    $stmt = $mysqli->prepare("DELETE FROM tasks WHERE name=?");
+    $stmt->bind_param("s", $hapusTask);
+    $stmt->execute();
+    $stmt->close();
+    header("Location: index.php");
+    exit;
+}
+
+// Proses edit tugas (tampilkan form edit)
+$editTaskData = null;
+if ($role === 'ketua' && isset($_POST['edit_tugas'])) {
+    $editName = $_POST['edit_tugas'];
+    $stmt = $mysqli->prepare("SELECT name, deadline FROM tasks WHERE name=?");
+    $stmt->bind_param("s", $editName);
+    $stmt->execute();
+    $stmt->bind_result($ename, $edeadline);
+    if ($stmt->fetch()) {
+        $editTaskData = ['name' => $ename, 'deadline' => $edeadline];
+    }
+    $stmt->close();
+}
+
+// Proses update tugas
+if ($role === 'ketua' && isset($_POST['update_tugas'])) {
+    $lama = $_POST['update_tugas_lama'];
+    $baru = $_POST['update_tugas_baru'];
+    $deadline = $_POST['update_deadline'];
+    $stmt = $mysqli->prepare("UPDATE tasks SET name=?, deadline=? WHERE name=?");
+    $stmt->bind_param("sss", $baru, $deadline, $lama);
+    $stmt->execute();
+    $stmt->close();
+    header("Location: index.php");
+    exit;
+}
+
 if ($role === 'anggota' && isset($_POST['anggota_selesai'])) {
     $anggotaTask = $_POST['anggota_selesai'];
     $stmt = $mysqli->prepare("UPDATE tasks SET anggota_done=1 WHERE name=?");
@@ -150,6 +188,23 @@ if ($res) {
 
   <div class="section">
       <h2>📋 Tugas Anggota</h2>
+        <?php if ($editTaskData): ?>
+          <form method="post" class="section" style="background:#fffbe7;border:1px solid #ffe082;padding:1rem 1.5rem;border-radius:8px;margin-bottom:1.5rem;">
+            <h3>Edit Tugas</h3>
+            <input type="hidden" name="update_tugas_lama" value="<?= htmlspecialchars($editTaskData['name']) ?>">
+            <div class="form-group">
+              <label>Nama Tugas</label>
+              <input type="text" name="update_tugas_baru" value="<?= htmlspecialchars($editTaskData['name']) ?>" required>
+            </div>
+            <div class="form-group">
+              <label>Deadline</label>
+              <input type="date" name="update_deadline" value="<?= htmlspecialchars($editTaskData['deadline']) ?>" required>
+            </div>
+            <button type="submit" name="update_tugas" class="btn" style="background:#ffb300;">Simpan Perubahan</button>
+            <a href="index.php" class="btn" style="background:#e0e0e0;color:#222;">Batal</a>
+          </form>
+        <?php endif; ?>
+
       <ul class="task-list">
       <?php foreach ($tasks as $task): 
         $taskName = $task['name'];
@@ -182,6 +237,18 @@ if ($res) {
               <?php endif; ?>
             <?php endif; ?>
           </div>
+
+              <?php if ($role === 'ketua'): ?>
+                <form method="post" style="display:inline;">
+                  <input type="hidden" name="edit_tugas" value="<?= htmlspecialchars($taskName) ?>">
+                  <button type="submit" class="btn" style="background:#ffb300;">Edit</button>
+                </form>
+                <form method="post" style="display:inline;" onsubmit="return confirm('Yakin ingin menghapus tugas ini?');">
+                  <input type="hidden" name="hapus_tugas" value="<?= htmlspecialchars($taskName) ?>">
+                  <button type="submit" class="btn" style="background:#e53935;">Hapus</button>
+                </form>
+              <?php endif; ?>
+
           <!-- Upload instruksi (khusus ketua) -->
           <?php if ($role === 'ketua'): ?>
             <form action="Uploads/upload_file.php" method="post" enctype="multipart/form-data" class="upload-form">
