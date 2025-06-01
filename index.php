@@ -35,6 +35,7 @@ if ($role === 'ketua' && isset($_POST['tambah_tugas'])) {
     $taskName = trim($_POST['task'] ?? '');
     $deadline = $_POST['deadline'] ?? null;
     if ($taskName && $deadline) {
+        // Insert tugas baru tanpa cek nama unik
         $stmt = $mysqli->prepare("INSERT INTO tasks (name, deadline) VALUES (?, ?)");
         $stmt->bind_param("ss", $taskName, $deadline);
         $stmt->execute();
@@ -55,7 +56,7 @@ if (isset($_POST['selesai_tugas'])) {
 }
 
 $tasks = [];
-$res = $mysqli->query("SELECT name, deadline, is_done FROM tasks");
+$res = $mysqli->query("SELECT name, deadline, is_done FROM tasks WHERE is_done=0");
 if ($res) {
     while ($row = $res->fetch_assoc()) {
         $tasks[] = $row;
@@ -142,6 +143,9 @@ if ($res) {
     <?php if ($role === 'ketua'): ?>
     <div class="section">
       <h2>⚙️ Panel Admin (Ketua)</h2>
+      <?php if (!empty($error_tugas)): ?>
+        <div class="error" style="color:#d32f2f;margin-bottom:1rem;"><?= $error_tugas ?></div>
+      <?php endif; ?>
       <form method="post">
         <div class="form-group">
           <label for="task">Tugas Baru</label>
