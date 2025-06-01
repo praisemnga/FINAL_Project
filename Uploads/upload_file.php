@@ -18,8 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['lampiran'])) {
         if (move_uploaded_file($file['tmp_name'], $target)) {
             // Koneksi ke database
             $mysqli = new mysqli("localhost", "root", "", "tugas_project_akhir");
-            $stmt = $mysqli->prepare("INSERT INTO attachments (task_name, filename, uploaded_by) VALUES (?, ?, ?)");
-            $stmt->bind_param("sss", $task, $newName, $user);
+            $type = $_POST['type'] ?? 'hasil'; // default hasil
+            $stmt = $mysqli->prepare("INSERT INTO attachments (task_name, filename, uploaded_by, type) VALUES (?, ?, ?, ?)");
+            $stmt->bind_param("ssss", $task, $newName, $user, $type);
             $stmt->execute();
             $stmt->close();
             header("Location: ../index.php?upload=success"); // perbaiki redirect
