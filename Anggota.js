@@ -4,14 +4,14 @@ const anggota = [
     nim: "230211060088",
     email: "praisemoniaga026@student.unsrat.ac.id",
     telp: "0821-9131-5664",
-    foto: "images/praise.jpg" // ganti dengan nama file foto kamu
+    foto: "Image/foto praise.jpg" 
   },
   {
     nama: "VANIA ESTHER SALELETANG",
     nim: "230211060012",
     email: "vaniasaleletang026@student.unsrat.ac.id",
     telp: "0813-4214-9692",
-    foto: "images/vania.jpg" // ganti dengan nama file foto anggota
+    foto: "Image/foto vania.jpg" 
   },
   // Tambahkan anggota lain sesuai kelompokmu
 ];
