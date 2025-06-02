@@ -184,12 +184,21 @@ if ($res) {
     }
 }
 
+// Filter lampiran berdasarkan group_id
 $attachments = [];
-$res = $mysqli->query("SELECT * FROM attachments");
-if ($res) {
+if ($group_id) {
+    $stmt = $mysqli->prepare(
+        "SELECT a.* FROM attachments a
+         JOIN tasks t ON a.task_name = t.name
+         WHERE t.group_id = ? AND a.group_id = ?"
+    );
+    $stmt->bind_param("ii", $group_id, $group_id);
+    $stmt->execute();
+    $res = $stmt->get_result();
     while ($row = $res->fetch_assoc()) {
         $attachments[$row['task_name']][] = $row;
     }
+    $stmt->close();
 }
 ?>
 <!DOCTYPE html>
