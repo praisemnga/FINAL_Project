@@ -5,6 +5,7 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 $role = $_SESSION['role'];
+$group_id = $_SESSION['group_id'] ?? null;
 
 // Koneksi ke database
 $mysqli = new mysqli("localhost", "root", "", "tugas_project_akhir");
@@ -15,9 +16,9 @@ if ($mysqli->connect_errno) {
 // Proses broadcast pesan
 if ($role === 'ketua' && isset($_POST['kirim_broadcast'])) {
     $pesan = trim($_POST['broadcast'] ?? '');
-    if ($pesan) {
-        $stmt = $mysqli->prepare("INSERT INTO broadcast (message) VALUES (?)");
-        $stmt->bind_param("s", $pesan);
+    if ($pesan && $group_id) {
+        $stmt = $mysqli->prepare("INSERT INTO broadcast (message, group_id) VALUES (?, ?)");
+        $stmt->bind_param("si", $pesan, $group_id);
         $stmt->execute();
         $stmt->close();
     }
@@ -26,10 +27,38 @@ if ($role === 'ketua' && isset($_POST['kirim_broadcast'])) {
 // Ambil pesan broadcast terbaru
 $pesan_broadcast = '';
 $waktu_broadcast = '';
-$res = $mysqli->query("SELECT message, created_at FROM broadcast ORDER BY id DESC LIMIT 1");
-if ($row = $res->fetch_assoc()) {
-    $pesan_broadcast = $row['message'];
-    $waktu_broadcast = date('d M Y H:i', strtotime($row['created_at']));
+if ($group_id) {
+    $stmt = $mysqli->prepare("SELECT message, created_at FROM broadcast WHERE group_id=? ORDER BY id DESC LIMIT 1");
+    $stmt->bind_param("i", $group_id);
+    $stmt->execute();
+    $stmt->bind_result($pesan_broadcast, $created_at);
+    if ($stmt->fetch()) {
+        $waktu_broadcast = date('d M Y H:i', strtotime($created_at));
+    }
+    $stmt->close();
+}
+
+$group_name = '';
+if ($group_id) {
+    $stmt = $mysqli->prepare("SELECT group_name FROM groups WHERE group_id=?");
+    $stmt->bind_param("i", $group_id);
+    $stmt->execute();
+    $stmt->bind_result($group_name);
+    $stmt->fetch();
+    $stmt->close();
+}
+
+// Ambil data anggota kelompok
+$anggota_kelompok = [];
+if ($group_id) {
+    $stmt = $mysqli->prepare("SELECT username, role FROM users WHERE group_id=? ORDER BY role DESC, username ASC");
+    $stmt->bind_param("i", $group_id);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    while ($row = $res->fetch_assoc()) {
+        $anggota_kelompok[] = $row;
+    }
+    $stmt->close();
 }
 
 // Proses Upload Dokumen
@@ -58,20 +87,14 @@ if ($role === 'ketua' && isset($_POST['simpan_docs'])) {
     }
 }
 
+// Tambah tugas
 if ($role === 'ketua' && isset($_POST['tambah_tugas'])) {
     $taskName = trim($_POST['task'] ?? '');
     $deadline = $_POST['deadline'] ?? null;
+    $group_id = $_SESSION['group_id'];
     if ($taskName && $deadline) {
-        $stmt = $mysqli->prepare("INSERT INTO tasks (name, deadline) VALUES (?, ?)");
-        $stmt->bind_param("ss", $taskName, $deadline);
-        $stmt->execute();
-        $stmt->close();
-        header("Location: index.php"); 
-        exit;
-
-        // Insert tugas baru 
-        $stmt = $mysqli->prepare("INSERT INTO tasks (name, deadline) VALUES (?, ?)");
-        $stmt->bind_param("ss", $taskName, $deadline);
+        $stmt = $mysqli->prepare("INSERT INTO tasks (name, deadline, group_id) VALUES (?, ?, ?)");
+        $stmt->bind_param("ssi", $taskName, $deadline, $group_id);
         $stmt->execute();
         $stmt->close();
         header("Location: index.php"); 
@@ -117,6 +140,7 @@ if ($role === 'ketua' && isset($_POST['update_tugas'])) {
     exit;
 }
 
+// Anggota menandai tugas sudah dikerjakan
 if ($role === 'anggota' && isset($_POST['anggota_selesai'])) {
     $anggotaTask = $_POST['anggota_selesai'];
     $stmt = $mysqli->prepare("UPDATE tasks SET anggota_done=1 WHERE name=?");
@@ -127,6 +151,7 @@ if ($role === 'anggota' && isset($_POST['anggota_selesai'])) {
     exit;
 }
 
+// Ketua menyelesaikan tugas
 if (isset($_POST['selesai_tugas'])) {
     $selesaiTask = $_POST['selesai_tugas'];
     $stmt = $mysqli->prepare("UPDATE tasks SET is_done=1 WHERE name=?");
@@ -137,12 +162,18 @@ if (isset($_POST['selesai_tugas'])) {
     exit;
 }
 
+// Ambil data tugas
+$group_id = $_SESSION['group_id'] ?? null;
 $tasks = [];
-$res = $mysqli->query("SELECT name, deadline, is_done FROM tasks WHERE is_done=0");
-if ($res) {
+if ($group_id) {
+    $stmt = $mysqli->prepare("SELECT name, deadline, is_done, anggota_done FROM tasks WHERE is_done=0 AND group_id=?");
+    $stmt->bind_param("i", $group_id);
+    $stmt->execute();
+    $res = $stmt->get_result();
     while ($row = $res->fetch_assoc()) {
         $tasks[] = $row;
     }
+    $stmt->close();
 }
 
 $docs_links = [];
@@ -173,7 +204,7 @@ if ($res) {
   <header>
     <h1>Sistem Manajemen Tugas Kelompok</h1>
     <p>Kelola tugas dengan efisien — untuk anggota dan ketua tim</p>
-    <a href="anggota.html" style="float:right;color:#fff;text-decoration:none;margin-top:-2rem;margin-right:180px;">Informasi Pengembang Website</a>
+    <a href="anggota.html" style="float:right;color:#fff;text-decoration:none;margin-top:-2rem;margin-right:180px;">Tentang Website</a>
     <a href="profile.php" style="float:right;color:#fff;text-decoration:none;margin-top:-2rem;margin-right:90px;">Profil</a>
     <a href="logout.php" style="float:right;color:#fff;text-decoration:none;margin-top:-2rem;">Logout</a>
   </header>
@@ -188,6 +219,22 @@ if ($res) {
 
   <div class="section">
       <h2>📋 Tugas Anggota</h2>
+      <h3 style="color:#4f46e5;margin-top:-10px;">Kelompok: <?= htmlspecialchars($group_name) ?></h3>
+
+        <?php if (!empty($anggota_kelompok)): ?>
+          <div style="margin-bottom:1rem;">
+            <strong>Anggota Kelompok:</strong>
+            <ul style="margin:0.5rem 0 0 1.2rem;padding:0;">
+              <?php foreach ($anggota_kelompok as $anggota): ?>
+                <li>
+                  <?= htmlspecialchars($anggota['username']) ?>
+                  <?= $anggota['role'] === 'ketua' ? '<span style="color:#4f46e5;font-weight:bold;"> (Ketua)</span>' : '' ?>
+                </li>
+              <?php endforeach; ?>
+            </ul>
+          </div>
+        <?php endif; ?>
+
         <?php if ($editTaskData): ?>
           <form method="post" class="section" style="background:#fffbe7;border:1px solid #ffe082;padding:1rem 1.5rem;border-radius:8px;margin-bottom:1.5rem;">
             <h3>Edit Tugas</h3>
@@ -206,7 +253,7 @@ if ($res) {
         <?php endif; ?>
 
       <ul class="task-list">
-      <?php foreach ($tasks as $task): 
+        <?php foreach ($tasks as $task): 
         $taskName = $task['name'];
         $isDone = isset($task['is_done']) ? $task['is_done'] : 0;
         $anggotaDone = isset($task['anggota_done']) ? $task['anggota_done'] : 0;
@@ -214,12 +261,14 @@ if ($res) {
         <li>
           <div class="task-row">
             <div class="task-info">
-             <span class="task-title<?= $isDone ? ' selesai' : '' ?>">
-               <?= htmlspecialchars($taskName) ?><?= $isDone ? ' (Selesai)' : '' ?>
-             </span>
-          </div>
-          <span class="deadline"><?= htmlspecialchars($task['deadline']) ? "Deadline: " . htmlspecialchars($task['deadline']) : "" ?></span>
-           <?php if (!$isDone): ?>
+              <span class="task-title<?= $isDone ? ' selesai' : '' ?>">
+                <?= htmlspecialchars($taskName) ?><?= $isDone ? ' (Selesai)' : '' ?>
+              </span>
+            </div>
+            <span class="deadline"><?= htmlspecialchars($task['deadline']) ? "Deadline: " . htmlspecialchars($task['deadline']) : "" ?></span>
+            
+            <!-- Status tugas oleh anggota -->
+            <?php if (!$isDone): ?>
               <?php if ($role === 'anggota' && !$anggotaDone): ?>
                 <form method="post">
                   <input type="hidden" name="anggota_selesai" value="<?= htmlspecialchars($taskName) ?>">
@@ -229,25 +278,31 @@ if ($res) {
                 <span style="color:#0288d1;font-weight:bold;">Sudah Dikerjakan</span>
               <?php endif; ?>
 
+              <!-- Tampilkan status ke ketua -->
               <?php if ($role === 'ketua'): ?>
-                <form method="post">
+                <?php if ($anggotaDone): ?>
+                  <span style="color:#0288d1;font-weight:bold;">✔ Sudah Dikerjakan oleh Anggota</span>
+                <?php else: ?>
+                  <span style="color:#d32f2f;font-weight:bold;">✖ Belum Dikerjakan oleh Anggota</span>
+                <?php endif; ?>
+                <form method="post" style="display:inline;">
                   <input type="hidden" name="selesai_tugas" value="<?= htmlspecialchars($taskName) ?>">
-                  <button type="submit" class="btn" style="background:#43a047;">Selesaikan</button>
+                  <button type="submit" class="btn" style="background:#43a047;" <?= !$anggotaDone ? 'disabled style="background:#bdbdbd;cursor:not-allowed;"' : '' ?>>Selesaikan</button>
                 </form>
               <?php endif; ?>
             <?php endif; ?>
           </div>
 
-              <?php if ($role === 'ketua'): ?>
-                <form method="post" style="display:inline;">
-                  <input type="hidden" name="edit_tugas" value="<?= htmlspecialchars($taskName) ?>">
-                  <button type="submit" class="btn" style="background:#ffb300;">Edit</button>
-                </form>
-                <form method="post" style="display:inline;" onsubmit="return confirm('Yakin ingin menghapus tugas ini?');">
-                  <input type="hidden" name="hapus_tugas" value="<?= htmlspecialchars($taskName) ?>">
-                  <button type="submit" class="btn" style="background:#e53935;">Hapus</button>
-                </form>
-              <?php endif; ?>
+          <?php if ($role === 'ketua'): ?>
+            <form method="post" style="display:inline;">
+              <input type="hidden" name="edit_tugas" value="<?= htmlspecialchars($taskName) ?>">
+              <button type="submit" class="btn" style="background:#ffb300;">Edit</button>
+            </form>
+            <form method="post" style="display:inline;" onsubmit="return confirm('Yakin ingin menghapus tugas ini?');">
+              <input type="hidden" name="hapus_tugas" value="<?= htmlspecialchars($taskName) ?>">
+              <button type="submit" class="btn" style="background:#e53935;">Hapus</button>
+            </form>
+          <?php endif; ?>
 
           <!-- Upload instruksi (khusus ketua) -->
           <?php if ($role === 'ketua'): ?>
@@ -348,37 +403,37 @@ if ($res) {
           <textarea name="broadcast" id="broadcast" rows="2" placeholder="Tulis pesan..." required></textarea>
         </div>
         <button type="submit" name="kirim_broadcast" class="btn">Kirim Broadcast</button>
-      </form>`
+      </form>
     <?php endif; ?>
 
     <div class="progress-container">
-            <p>📊 Progres Tugas Kelompok</p>
-            <div class="progress-bar">
-              <div class="progress-fill">0%</div>
-            </div>
-          </div>
+      <p>📊 Progres Tugas Kelompok</p>
+      <div class="progress-bar">
+        <div class="progress-fill">0%</div>
+      </div>
+    </div>
 
-          <div class="section dashboard-section">
-            <h2>📈 Dashboard Tugas</h2>
-            <div class="dashboard-cards">
-              <div class="card">
-                <h3 id="total-tugas">0</h3>
-                <p>Total Tugas</p>
-              </div>
-              <div class="card">
-                <h3 id="tugas-selesai">0</h3>
-                <p>Selesai</p>
-              </div>
-              <div class="card">
-                <h3 id="tugas-belum">0</h3>
-                <p>Belum Selesai</p>
-              </div>
-            </div>
-          </div>
-      <script>
-        const totalTugas = <?= count($tasks) ?>;
-        const tugasSelesai = <?= count(array_filter($tasks, fn($t) => !empty($t['is_done']))); ?>;
-      </script>
-  <script src="script.js"></script>
-</body>
+    <div class="section dashboard-section">
+      <h2>📈 Dashboard Tugas</h2>
+      <div class="dashboard-cards">
+        <div class="card">
+          <h3 id="total-tugas">0</h3>
+          <p>Total Tugas</p>
+        </div>
+        <div class="card">
+          <h3 id="tugas-selesai">0</h3>
+          <p>Selesai</p>
+        </div>
+        <div class="card">
+          <h3 id="tugas-belum">0</h3>
+          <p>Belum Selesai</p>
+        </div>
+      </div>
+    </div>
+    <script>
+      const totalTugas = <?= count($tasks) ?>;
+      const tugasSelesai = <?= count(array_filter($tasks, fn($t) => !empty($t['is_done']))); ?>;
+    </script>
+    <script src="script.js"></script>
+  </body>
 </html>

@@ -13,24 +13,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $uname = $_POST['username'] ?? '';
     $pass = $_POST['password'] ?? '';
 
-    // Query user
-    $stmt = $mysqli->prepare("SELECT username, password, role FROM users WHERE username = ?");
-    $stmt->bind_param("s", $uname);
-    $stmt->execute();
-    $stmt->store_result();
-
-    if ($stmt->num_rows > 0) {
-        $stmt->bind_result($db_user, $db_pass, $db_role);
-        $stmt->fetch();
-        if (password_verify($pass, $db_pass)) {
-            $_SESSION['username'] = $db_user;
-            $_SESSION['role'] = $db_role;
-            header('Location: index.php');
-            exit;
+        $stmt = $mysqli->prepare("SELECT username, password, role, group_id FROM users WHERE username = ?");
+        $stmt->bind_param("s", $uname);
+        $stmt->execute();
+        $stmt->store_result();
+        if ($stmt->num_rows > 0) {
+            $stmt->bind_result($db_user, $db_pass, $db_role, $db_group_id);
+            $stmt->fetch();
+            if (password_verify($pass, $db_pass)) {
+                $_SESSION['username'] = $db_user;
+                $_SESSION['role'] = $db_role;
+                $_SESSION['group_id'] = $db_group_id;
+                header('Location: index.php');
+                exit;
+            }
         }
-    }
-    $error = 'Username atau password salah!';
-}
+    $error = 'Username atau password salah!'; } 
 ?>
 <!DOCTYPE html>
 <html lang="id">

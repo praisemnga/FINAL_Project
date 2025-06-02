@@ -13,6 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $uname = trim($_POST['username'] ?? '');
     $pass = $_POST['password'] ?? '';
     $role = $_POST['role'] ?? 'anggota';
+    $group_id = $_POST['group_id'] ?? '';
+    $group_name = trim($_POST['group_name'] ?? '');
 
     // Validasi password
     if (
@@ -32,14 +34,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt->num_rows > 0) {
             $error = 'Username sudah terdaftar!';
         } else {
-            // Insert user baru
-            $hash = password_hash($pass, PASSWORD_DEFAULT);
-            $stmt = $mysqli->prepare("INSERT INTO users (username, password, role) VALUES (?, ?, ?)");
-            $stmt->bind_param("sss", $uname, $hash, $role);
-            if ($stmt->execute()) {
-                $success = 'Registrasi berhasil! Silakan login.';
+            if ($role === 'ketua') {
+                // Ketua: cek group_id belum pernah dipakai
+                $stmt = $mysqli->prepare("SELECT id FROM groups WHERE group_id = ?");
+                $stmt->bind_param("i", $group_id);
+                $stmt->execute();
+                $stmt->store_result();
+                if ($stmt->num_rows > 0) {
+                    $error = 'ID Kelompok sudah dipakai oleh kelompok lain!';
+                } elseif (empty($group_name)) {
+                    $error = 'Nama kelompok harus diisi!';
+                } else {
+                    // Insert ke tabel groups
+                    $stmt->close();
+                    $stmt = $mysqli->prepare("INSERT INTO groups (group_id, group_name) VALUES (?, ?)");
+                    $stmt->bind_param("is", $group_id, $group_name);
+                    $stmt->execute();
+                    // Insert user ketua
+                    $hash = password_hash($pass, PASSWORD_DEFAULT);
+                    $stmt = $mysqli->prepare("INSERT INTO users (username, password, role, group_id) VALUES (?, ?, ?, ?)");
+                    $stmt->bind_param("sssi", $uname, $hash, $role, $group_id);
+                    if ($stmt->execute()) {
+                        $success = 'Registrasi berhasil! Silakan login.';
+                    } else {
+                        $error = 'Gagal registrasi. Coba lagi.';
+                    }
+                }
             } else {
-                $error = 'Gagal registrasi. Coba lagi.';
+                // Anggota: cek group_id sudah ada
+                $stmt = $mysqli->prepare("SELECT id FROM groups WHERE group_id = ?");
+                $stmt->bind_param("i", $group_id);
+                $stmt->execute();
+                $stmt->store_result();
+                if ($stmt->num_rows == 0) {
+                    $error = 'ID Kelompok tidak ditemukan. Minta ketua untuk membuatnya!';
+                } else {
+                    // Insert user anggota
+                    $hash = password_hash($pass, PASSWORD_DEFAULT);
+                    $stmt = $mysqli->prepare("INSERT INTO users (username, password, role, group_id) VALUES (?, ?, ?, ?)");
+                    $stmt->bind_param("sssi", $uname, $hash, $role, $group_id);
+                    if ($stmt->execute()) {
+                        $success = 'Registrasi berhasil! Silakan login.';
+                    } else {
+                        $error = 'Gagal registrasi. Coba lagi.';
+                    }
+                }
             }
         }
     }
@@ -57,6 +96,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       .error {color:#d32f2f;}
       .success {color:#388e3c;}
     </style>
+    <script>
+    function toggleGroupName() {
+      var role = document.querySelector('select[name="role"]').value;
+      document.getElementById('group_name_box').style.display = (role === 'ketua') ? 'block' : 'none';
+    }
+    </script>
 </head>
 <body>
     <div class="login-box">
@@ -67,13 +112,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="text" name="username" placeholder="Username" required autofocus>
             <input type="password" name="password" placeholder="Password" required>
             <small>Password minimal 8 karakter, huruf besar, huruf kecil, angka, dan karakter spesial.</small>
-            <select name="role">
+            <select name="role" onchange="toggleGroupName()">
                 <option value="anggota">Anggota</option>
                 <option value="ketua">Ketua</option>
             </select>
+            <input type="number" name="group_id" placeholder="ID Kelompok" required>
+            <div id="group_name_box" style="display:none;">
+                <input type="text" name="group_name" placeholder="Nama Kelompok (khusus ketua)">
+            </div>
             <button class="btn" type="submit">Register</button>
         </form>
         <p>Sudah punya akun? <a href="Login.php">Login di sini</a></p>
     </div>
+    <script>toggleGroupName();</script>
 </body>
 </html>
