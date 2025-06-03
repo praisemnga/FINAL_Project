@@ -313,7 +313,7 @@ if ($group_id) {
 
           <!-- Upload instruksi (khusus ketua) -->
           <?php if ($role === 'ketua'): ?>
-            <form action="Uploads/upload_file.php" method="post" enctype="multipart/form-data" class="upload-form">
+            <form action="uploads/upload_file.php" method="post" enctype="multipart/form-data" class="upload-form">
               <input type="hidden" name="task" value="<?= htmlspecialchars($taskName) ?>">
               <input type="hidden" name="type" value="instruksi">
               <input type="file" name="lampiran" required>
@@ -322,7 +322,7 @@ if ($group_id) {
           <?php endif; ?>
 
           <!-- Upload hasil tugas (anggota & ketua) -->
-          <form action="Uploads/upload_file.php" method="post" enctype="multipart/form-data" class="upload-form">
+          <form action="uploads/upload_file.php" method="post" enctype="multipart/form-data" class="upload-form">
             <input type="hidden" name="task" value="<?= htmlspecialchars($taskName) ?>">
             <input type="hidden" name="type" value="hasil">
             <input type="file" name="lampiran" required>
