@@ -1,5 +1,13 @@
 <?php
-$mysqli = new mysqli("sql209.infinityfree.com", "if0_39149676", "Projectweb123", "if0_39149676_tugas_project_akhir");
-if ($mysqli->connect_error) {
-    die("Gagal koneksi MySQL: " . $mysqli->connect_error);
+$host = "sql209.infinityfree.com";
+$user = "if0_39149676";
+$password = "Projectweb1234"; 
+$database =
+"if0_39149676_tugas_project_akhir";
+
+$conn = mysqli_connect($host, $user, $password, $database);
+
+if (!$conn) {
+    die("koneksi database gagal" .
+mysqli_connect_error());    
 }
