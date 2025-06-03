@@ -2,7 +2,7 @@
 session_start();
 
 // Koneksi ke database
-$mysqli = new mysqli("localhost", "root", "", "tugas_project_akhir"); 
+require_once 'koneksi.php';
 
 if ($mysqli->connect_errno) {
     die("Gagal koneksi MySQL: " . $mysqli->connect_error);

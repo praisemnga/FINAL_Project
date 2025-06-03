@@ -7,10 +7,7 @@ if (!isset($_SESSION['username'])) {
 $username = $_SESSION['username'];
 
 // Koneksi ke database
-$mysqli = new mysqli("localhost", "root", "", "tugas_project_akhir");
-if ($mysqli->connect_errno) {
-    die("Gagal koneksi MySQL: " . $mysqli->connect_error);
-}
+require_once 'koneksi.php';
 
 // Ambil data user dari database
 $stmt = $mysqli->prepare("SELECT username, role FROM users WHERE username = ?");

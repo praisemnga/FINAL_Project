@@ -1,17 +1,15 @@
 <?php
 session_start();
+
+// Koneksi ke database
+require_once 'koneksi.php';
+
 if (!isset($_SESSION['username'])) {
     header('Location: login.php');
     exit;
 }
 $role = $_SESSION['role'];
 $group_id = $_SESSION['group_id'] ?? null;
-
-// Koneksi ke database
-$mysqli = new mysqli("localhost", "root", "", "tugas_project_akhir");
-if ($mysqli->connect_errno) {
-    die("Gagal koneksi MySQL: " . $mysqli->connect_error);
-}
 
 // Proses broadcast pesan
 if ($role === 'ketua' && isset($_POST['kirim_broadcast'])) {
