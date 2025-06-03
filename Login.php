@@ -4,10 +4,6 @@ session_start();
 // Koneksi ke database
 require_once 'koneksi.php';
 
-if ($mysqli->connect_errno) {
-    die("Gagal koneksi MySQL: " . $mysqli->connect_error);
-}
-
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $uname = $_POST['username'] ?? '';
@@ -51,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="password" name="password" placeholder="Password" required>
             <button class="btn" type="submit">Login</button>
         </form>
-        <p>Belum punya akun? <a href="register.php">Daftar di sini</a></p>
+        <p>Belum punya akun? <a href="Register.php">Daftar di sini</a></p>
 <p><a href="lupa_password.php">Lupa Password?</a></p>
     </div>
 </body>
